@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Password Strength Analyzer</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #14213d;
+      --muted: #5f6b85;
+      --primary: #2563eb;
+      --good: #16a34a;
+      --warn: #f59e0b;
+      --bad: #dc2626;
+      --border: #dbe3f1;
+      --shadow: 0 10px 30px rgba(20, 33, 61, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .wrap {
+      width: min(920px, 100%);
+      display: grid;
+      gap: 20px;
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+    h1 { margin: 0 0 8px; font-size: clamp(28px, 3vw, 40px); }
+    p { margin: 0; color: var(--muted); line-height: 1.6; }
+    label { display: block; margin: 20px 0 10px; font-weight: 600; }
+    .field {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      background: #f8fbff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+    input[type="password"], input[type="text"] {
+      width: 100%;
+      border: 0;
+      outline: none;
+      background: transparent;
+      font-size: 16px;
+      color: var(--text);
+    }
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .15s ease, opacity .15s ease;
+    }
+    button:hover { transform: translateY(-1px); }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-ghost { background: #e8eefb; color: var(--text); }
+    .meter {
+      margin-top: 18px;
+      height: 12px;
+      background: #e8edf7;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .meter > div {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      transition: width .25s ease, background .25s ease;
+    }
+    .score-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .grid {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .check {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fcfdff;
+    }
+    .check span:last-child { font-weight: 700; }
+    .ok { color: var(--good); }
+    .no { color: var(--bad); }
+    .warn { color: var(--warn); }
+    .list {
+      margin: 14px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .suggestion {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .suggest-box {
+      border: 1px solid var(--border);
+      background: #f8fbff;
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+    .suggest-text {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      word-break: break-all;
+    }
+    .small {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .stats {
+      display: grid;
+      gap: 12px;
+    }
+    .stat {
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: #fcfdff;
+    }
+    .stat strong { display: block; font-size: 22px; margin-bottom: 4px; }
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    @media (max-width: 840px) {
+      .wrap { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <h1>Password Strength Analyzer</h1>
+      <p>Check password length, complexity, patterns, and common-password risk. Everything runs locally in your browser.</p>
+
+      <label for="password">Enter password</label>
+      <div class="field">
+        <input id="password" type="password" placeholder="Type a password..." autocomplete="off" />
+        <button class="btn-ghost" id="toggleBtn" type="button">Show</button>
+      </div>
+      <div class="toggle">
+        <input id="compareOld" type="checkbox" />
+        <label for="compareOld" style="margin:0;font-weight:500;">Compare against previously used passwords</label>
+      </div>
+
+      <div class="meter" aria-label="strength meter"><div id="meterFill"></div></div>
+      <div class="score-row">
+        <div class="badge" id="badge">Start typing</div>
+        <div class="small" id="scoreText">Score: 0 / 100</div>
+      </div>
+
+      <div class="grid" id="checks"></div>
+
+      <div class="suggestion">
+        <div>
+          <strong>Safer alternative</strong>
+          <div class="small">Generated locally using random words, digits, and symbols.</div>
+        </div>
+        <div class="suggest-box">
+          <div class="suggest-text" id="suggestionText">—</div>
+          <button class="btn-primary" id="regenBtn" type="button">Regenerate</button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="card stats">
+      <div class="stat">
+        <strong id="lengthStat">0</strong>
+        <div class="small">Password length</div>
+      </div>
+      <div class="stat">
+        <strong id="entropyStat">0</strong>
+        <div class="small">Estimated entropy bits</div>
+      </div>
+      <div class="stat">
+        <strong id="timeStat">Instant</strong>
+        <div class="small">Estimated offline crack difficulty</div>
+      </div>
+      <div class="stat">
+        <strong>Tips</strong>
+        <ul class="list">
+          <li>Use at least 12-16 characters.</li>
+          <li>Prefer passphrases over short complex strings.</li>
+          <li>Avoid reused, common, and leaked passwords.</li>
+        </ul>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    const passwordInput = document.getElementById('password');
+    const toggleBtn = document.getElementById('toggleBtn');
+    const meterFill = document.getElementById('meterFill');
+    const badge = document.getElementById('badge');
+    const scoreText = document.getElementById('scoreText');
+    const checksEl = document.getElementById('checks');
+    const suggestionText = document.getElementById('suggestionText');
+    const regenBtn = document.getElementById('regenBtn');
+    const lengthStat = document.getElementById('lengthStat');
+    const entropyStat = document.getElementById('entropyStat');
+    const timeStat = document.getElementById('timeStat');
+    const compareOld = document.getElementById('compareOld');
+
+    const commonPasswords = new Set([
+      'password','123456','123456789','12345678','qwerty','abc123','111111','admin',
+      'letmein','welcome','iloveyou','monkey','dragon','football','shadow','master'
+    ]);
+
+    const oldPasswords = ['summer2024!', 'Hyderabad@123', 'Pass1234'];
+    const words = ['copper','river','forest','planet','violet','summer','rocket','camera','silver','orchid','puzzle','signal'];
+    const symbols = ['!', '@', '#', '$', '%', '&', '*', '?'];
+
+    function analyze(pw) {
+      const hasLower = /[a-z]/.test(pw);
+      const hasUpper = /[A-Z]/.test(pw);
+      const hasDigit = /d/.test(pw);
+      const hasSymbol = /[^A-Za-z0-9]/.test(pw);
+      const len = pw.length;
+      const lower = pw.toLowerCase();
+
+      let score = 0;
+      score += Math.min(len * 4, 40);
+      if (hasLower) score += 10;
+      if (hasUpper) score += 10;
+      if (hasDigit) score += 10;
+      if (hasSymbol) score += 10;
+      if (len >= 12) score += 10;
+      if (len >= 16) score += 10;
+
+      const repeated = /(.)\u0001{2,}/.test(pw);
+      const seq = /(?:abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz|1234|2345|3456|4567|5678|6789)/i.test(pw);
+      const common = commonPasswords.has(lower);
+      const reused = compareOld.checked && oldPasswords.map(x => x.toLowerCase()).includes(lower);
+
+      if (len < 8) score -= 25;
+      if (len < 12) score -= 10;
+      if (repeated) score -= 15;
+      if (seq) score -= 20;
+      if (common) score -= 40;
+      if (reused) score -= 25;
+
+      score = Math.max(0, Math.min(100, score));
+
+      const charset = (hasLower ? 26 : 0) + (hasUpper ? 26 : 0) + (hasDigit ? 10 : 0) + (hasSymbol ? 33 : 0);
+      const entropy = len && charset ? Math.round(len * Math.log2(charset)) : 0;
+
+      let level = 'Weak';
+      let color = 'var(--bad)';
+      if (score >= 80) { level = 'Strong'; color = 'var(--good)'; }
+      else if (score >= 50) { level = 'Fair'; color = 'var(--warn)'; }
+
+      const crack = entropy < 30 ? 'Very easy' : entropy < 50 ? 'Easy' : entropy < 70 ? 'Moderate' : entropy < 90 ? 'Hard' : 'Very hard';
+
+      const findings = [
+        ['Length', len >= 12 ? 'Good' : len >= 8 ? 'Needs work' : 'Too short', len >= 12 ? 'ok' : len >= 8 ? 'warn' : 'no'],
+        ['Character variety', [hasLower, hasUpper, hasDigit, hasSymbol].filter(Boolean).length >= 3 ? 'Good' : 'Needs work', [hasLower, hasUpper, hasDigit, hasSymbol].filter(Boolean).length >= 3 ? 'ok' : 'warn'],
+        ['Common password', common ? 'Matched' : 'Not found', common ? 'no' : 'ok'],
+        ['Repeated/sequential', (repeated || seq) ? 'Detected' : 'Clear', (repeated || seq) ? 'no' : 'ok'],
+        ['Reuse check', reused ? 'Seen before' : 'Unique', reused ? 'no' : 'ok']
+      ];
+
+      return { score, level, color, entropy, crack, len, findings };
+    }
+
+    function renderChecks(findings) {
+      checksEl.innerHTML = findings.map(([label, value, cls]) => `
+        <div class="check">
+          <span>${label}</span>
+          <span class="${cls}">${value}</span>
+        </div>
+      `).join('');
+    }
+
+    function timeEstimate(entropy) {
+      if (entropy < 30) return 'Instant';
+      if (entropy < 50) return 'Minutes to hours';
+      if (entropy < 70) return 'Days to years';
+      if (entropy < 90) return 'Years to centuries';
+      return 'Centuries+';
+    }
+
+    function suggestPassword() {
+      const w1 = words[Math.floor(Math.random() * words.length)];
+      const w2 = words[Math.floor(Math.random() * words.length)];
+      const w3 = words[Math.floor(Math.random() * words.length)];
+      const d = Math.floor(10 + Math.random() * 90);
+      const s = symbols[Math.floor(Math.random() * symbols.length)];
+      return `${w1}-${w2}${s}${w3}${d}`;
+    }
+
+    function update() {
+      const pw = passwordInput.value;
+      const r = analyze(pw);
+      meterFill.style.width = `${r.score}%`;
+      meterFill.style.background = r.color;
+      badge.textContent = r.level;
+      badge.style.background = r.color + '20';
+      badge.style.color = r.color;
+      scoreText.textContent = `Score: ${r.score} / 100`;
+      lengthStat.textContent = r.len;
+      entropyStat.textContent = r.entropy;
+      timeStat.textContent = timeEstimate(r.entropy);
+      renderChecks(r.findings);
+      if (pw) suggestionText.textContent = suggestPassword();
+      else suggestionText.textContent = 'Enter a password to generate a stronger alternative.';
+    }
+
+    passwordInput.addEventListener('input', update);
+    regenBtn.addEventListener('click', () => suggestionText.textContent = suggestPassword());
+    toggleBtn.addEventListener('click', () => {
+      const type = passwordInput.type === 'password' ? 'text' : 'password';
+      passwordInput.type = type;
+      toggleBtn.textContent = type === 'password' ? 'Show' : 'Hide';
+    });
+    compareOld.addEventListener('change', update);
+
+    update();
+  </script>
+</body>
+</html>

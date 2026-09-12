@@ -28,8 +28,29 @@
       place-items: center;
       padding: 24px;
     }
-    .wrap {
+    .page {
       width: min(920px, 100%);
+      display: grid;
+      gap: 20px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 4px 4px 4px 2px;
+    }
+    .brand svg { flex-shrink: 0; }
+    .brand-text h2 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 0.3px;
+    }
+    .brand-text span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .wrap {
+      width: 100%;
       display: grid;
       gap: 20px;
       grid-template-columns: 1.1fr 0.9fr;
@@ -72,166 +93,223 @@
     button:hover { transform: translateY(-1px); }
     .btn-primary { background: var(--primary); color: white; }
     .btn-ghost { background: #e8eefb; color: var(--text); }
+    .compare-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+    }
     .meter {
-      margin-top: 18px;
-      height: 12px;
-      background: #e8edf7;
+      margin-top: 20px;
+      height: 10px;
       border-radius: 999px;
+      background: #e8eefb;
       overflow: hidden;
     }
-    .meter > div {
+    .meter #meterFill {
       height: 100%;
       width: 0%;
-      border-radius: inherit;
+      border-radius: 999px;
+      background: var(--bad);
       transition: width .25s ease, background .25s ease;
     }
     .score-row {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       margin-top: 12px;
-      gap: 12px;
-      flex-wrap: wrap;
     }
     .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      border-radius: 999px;
       font-weight: 700;
-      font-size: 14px;
+      font-size: 13px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #e8eefb;
     }
+    .small { color: var(--muted); font-size: 13px; }
     .grid {
       display: grid;
-      gap: 12px;
-      margin-top: 18px;
+      gap: 10px;
+      margin-top: 20px;
     }
     .check {
       display: flex;
       justify-content: space-between;
-      gap: 16px;
-      padding: 12px 14px;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      background: #fcfdff;
-    }
-    .check span:last-child { font-weight: 700; }
-    .ok { color: var(--good); }
-    .no { color: var(--bad); }
-    .warn { color: var(--warn); }
-    .list {
-      margin: 14px 0 0;
-      padding-left: 18px;
-      color: var(--muted);
-      line-height: 1.7;
-    }
-    .suggestion {
-      display: grid;
-      gap: 12px;
-      margin-top: 18px;
-    }
-    .suggest-box {
-      border: 1px solid var(--border);
+      align-items: center;
       background: #f8fbff;
-      border-radius: 14px;
-      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 14px;
+    }
+    .check .ok { color: var(--good); font-weight: 700; }
+    .check .warn { color: var(--warn); font-weight: 700; }
+    .check .no { color: var(--bad); font-weight: 700; }
+    .suggestion {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px dashed var(--border);
       display: flex;
       justify-content: space-between;
-      gap: 12px;
       align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
     }
-    .suggest-text {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      word-break: break-all;
-    }
-    .small {
-      font-size: 13px;
-      color: var(--muted);
-    }
-    .stats {
-      display: grid;
-      gap: 12px;
-    }
-    .stat {
-      padding: 16px;
-      border-radius: 16px;
-      border: 1px solid var(--border);
-      background: #fcfdff;
-    }
-    .stat strong { display: block; font-size: 22px; margin-bottom: 4px; }
-    .toggle {
+    .suggest-box {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-top: 10px;
-      color: var(--muted);
+    }
+    .suggest-text {
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      background: #f8fbff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 12px;
       font-size: 14px;
     }
-    @media (max-width: 840px) {
+    .stats {
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+    .stat {
+      background: #f8fbff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+    }
+    .stat strong { display: block; font-size: 22px; margin-bottom: 4px; }
+    .list { margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: 13px; }
+    .list li { margin-bottom: 4px; }
+    footer.credits {
+      text-align: center;
+      padding: 8px 4px 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    footer.credits .name {
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      color: var(--text);
+    }
+    footer.credits .links {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+    footer.credits a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    footer.credits a:hover { text-decoration: underline; }
+    @media (max-width: 720px) {
       .wrap { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <main class="wrap">
-    <section class="card">
-      <h1>Password Strength Analyzer</h1>
-      <p>Check password length, complexity, patterns, and common-password risk. Everything runs locally in your browser.</p>
+  <div class="page">
 
-      <label for="password">Enter password</label>
-      <div class="field">
-        <input id="password" type="password" placeholder="Type a password..." autocomplete="off" />
-        <button class="btn-ghost" id="toggleBtn" type="button">Show</button>
+    <div class="brand">
+      <svg width="44" height="44" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#22d3ee"/>
+            <stop offset="100%" stop-color="#6366f1"/>
+          </linearGradient>
+          <linearGradient id="keyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#fbbf24"/>
+            <stop offset="100%" stop-color="#f59e0b"/>
+          </linearGradient>
+        </defs>
+        <path d="M60 6 L104 20 V54 C104 84 86 104 60 116 C34 104 16 84 16 54 V20 Z"
+              fill="url(#shieldGrad)" stroke="#0f172a" stroke-width="2"/>
+        <path d="M60 14 L96 26 V54 C96 78 82 94 60 106 C38 94 24 78 24 54 V26 Z"
+              fill="#0f172a" opacity="0.15"/>
+        <circle cx="60" cy="52" r="12" fill="url(#keyGrad)"/>
+        <path d="M53 58 L67 58 L62 78 L58 78 Z" fill="url(#keyGrad)"/>
+      </svg>
+      <div class="brand-text">
+        <h2>Password Strength Analyzer</h2>
+        <span>Local, private password strength &amp; entropy checker</span>
       </div>
-      <div class="toggle">
-        <input id="compareOld" type="checkbox" />
-        <label for="compareOld" style="margin:0;font-weight:500;">Compare against previously used passwords</label>
-      </div>
+    </div>
 
-      <div class="meter" aria-label="strength meter"><div id="meterFill"></div></div>
-      <div class="score-row">
-        <div class="badge" id="badge">Start typing</div>
-        <div class="small" id="scoreText">Score: 0 / 100</div>
-      </div>
+    <main class="wrap">
+      <section class="card">
+        <h1>Password Strength Analyzer</h1>
+        <p>Check password length, complexity, patterns, and common-password risk. Everything runs locally in your browser.</p>
 
-      <div class="grid" id="checks"></div>
-
-      <div class="suggestion">
-        <div>
-          <strong>Safer alternative</strong>
-          <div class="small">Generated locally using random words, digits, and symbols.</div>
+        <label for="password">Enter password</label>
+        <div class="field">
+          <input id="password" type="password" placeholder="Type your password..." autocomplete="off" />
+          <button class="btn-ghost" id="toggleBtn" type="button">Show</button>
         </div>
-        <div class="suggest-box">
-          <div class="suggest-text" id="suggestionText">—</div>
-          <button class="btn-primary" id="regenBtn" type="button">Regenerate</button>
-        </div>
-      </div>
-    </section>
 
-    <aside class="card stats">
-      <div class="stat">
-        <strong id="lengthStat">0</strong>
-        <div class="small">Password length</div>
+        <div class="compare-row">
+          <input id="compareOld" type="checkbox" />
+          <label for="compareOld" style="margin:0;font-weight:500;">Compare against previously used passwords</label>
+        </div>
+
+        <div class="meter" aria-label="strength meter"><div id="meterFill"></div></div>
+        <div class="score-row">
+          <div class="badge" id="badge">Start typing</div>
+          <div class="small" id="scoreText">Score: 0 / 100</div>
+        </div>
+
+        <div class="grid" id="checks"></div>
+
+        <div class="suggestion">
+          <div>
+            <strong>Safer alternative</strong>
+            <div class="small">Generated locally using random words, digits, and symbols.</div>
+          </div>
+          <div class="suggest-box">
+            <div class="suggest-text" id="suggestionText">—</div>
+            <button class="btn-primary" id="regenBtn" type="button">Regenerate</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card stats">
+        <div class="stat">
+          <strong id="lengthStat">0</strong>
+          <div class="small">Password length</div>
+        </div>
+        <div class="stat">
+          <strong id="entropyStat">0</strong>
+          <div class="small">Estimated entropy bits</div>
+        </div>
+        <div class="stat">
+          <strong id="timeStat">Instant</strong>
+          <div class="small">Estimated offline crack difficulty</div>
+        </div>
+        <div class="stat">
+          <strong>Tips</strong>
+          <ul class="list">
+            <li>Use at least 12-16 characters.</li>
+            <li>Prefer passphrases over short complex strings.</li>
+            <li>Avoid reused, common, and leaked passwords.</li>
+          </ul>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="credits">
+      <div class="name">NIKHIL CHARY SRIRAMOJU</div>
+      <div class="links">
+        <a href="https://github.com/Nikhil-creat" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://in.linkedin.com/in/nikhil-chary-sriramoju-95041b38a" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://instagram.com/nikhil__sriramoju" target="_blank" rel="noopener">Instagram</a>
+        <a href="mailto:nikhilsriramoju66@gmail.com">Email</a>
       </div>
-      <div class="stat">
-        <strong id="entropyStat">0</strong>
-        <div class="small">Estimated entropy bits</div>
-      </div>
-      <div class="stat">
-        <strong id="timeStat">Instant</strong>
-        <div class="small">Estimated offline crack difficulty</div>
-      </div>
-      <div class="stat">
-        <strong>Tips</strong>
-        <ul class="list">
-          <li>Use at least 12-16 characters.</li>
-          <li>Prefer passphrases over short complex strings.</li>
-          <li>Avoid reused, common, and leaked passwords.</li>
-        </ul>
-      </div>
-    </aside>
-  </main>
+    </footer>
+
+  </div>
 
   <script>
     const passwordInput = document.getElementById('password');
@@ -259,7 +337,7 @@
     function analyze(pw) {
       const hasLower = /[a-z]/.test(pw);
       const hasUpper = /[A-Z]/.test(pw);
-      const hasDigit = /d/.test(pw);
+      const hasDigit = /\d/.test(pw);
       const hasSymbol = /[^A-Za-z0-9]/.test(pw);
       const len = pw.length;
       const lower = pw.toLowerCase();
@@ -273,7 +351,7 @@
       if (len >= 12) score += 10;
       if (len >= 16) score += 10;
 
-      const repeated = /(.)\u0001{2,}/.test(pw);
+      const repeated = /(.)\1{2,}/.test(pw);
       const seq = /(?:abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz|1234|2345|3456|4567|5678|6789)/i.test(pw);
       const common = commonPasswords.has(lower);
       const reused = compareOld.checked && oldPasswords.map(x => x.toLowerCase()).includes(lower);
